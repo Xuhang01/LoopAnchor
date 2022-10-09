@@ -7,7 +7,6 @@ LoopAnchor – Inferring CTCF insulators and anchored loops across human tissues
 ===============================================================================================
 
 .. toctree::
-   :maxdepth: 1
    
    Pipeline
 
