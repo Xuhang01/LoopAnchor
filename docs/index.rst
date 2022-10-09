@@ -6,11 +6,6 @@ Welcome to LoopAnchor's documentation!
 LoopAnchor – Inferring CTCF insulators and anchored loops across human tissues and cell types.
 =====================================================================================================================================================
 
-.. toctree::
-   :maxdepth: 1
-   
-   LoopAnchor_Pipeline
-
 
 .. image:: ./flowchart.PNG
    :width: 1400
