@@ -28,28 +28,28 @@ work_dir
 ```
 More explainations of data requirement:
 
-CTCF_peak.bed.gz: 
-    (1) the ChIP-seq narrowPeak file for CTCF.
-    (2) Columns: chrom,chromStart,chromEnd,name,score,strand,signalValue,pValue,qValue,summit.
+CTCF_peak.bed.gz:   
+    (1) the ChIP-seq narrowPeak file for CTCF.  
+    (2) Columns: chrom,chromStart,chromEnd,name,score,strand,signalValue,pValue,qValue,summit.  
 
-loop.bedpe:
-    (1) the ChIA-PET loop file for Cohesin (RAD21) from the same cell type.
-    (2) Columns: chr1,start1,end1,chr2,start2,end2,name,score,strand1,strand2.
+loop.bedpe:  
+    (1) the ChIA-PET loop file for Cohesin (RAD21) from the same cell type.  
+    (2) Columns: chr1,start1,end1,chr2,start2,end2,name,score,strand1,strand2.  
+ 
+CTCF_motif.tsv:  
+    (1) position of all CTCF binding sites.  
+    (2) non-cell-type specific.  
+    (3) can be found in data folder.  
 
-CTCF_motif.tsv:
-    (1) position of all CTCF binding sites.
-    (2) non-cell-type specific.
-    (3) can be found in data folder.
+dna_feature.npz:  
+    (1) one-hot representation of DNA sequence for CTCF binding sites.  
+    (2) non-cell-type specific.  
+    (3) downloaded as addressed in last section.  
 
-dna_feature.npz:
-    (1) one-hot representation of DNA sequence for CTCF binding sites.
-    (2) non-cell-type specific.
-    (3) downloaded as addressed in last section.
-
-cadd_feature.npz:
-    (1) cadd features of DNA sequence for CTCF binding sites
-    (2) non-cell-type specific
-    (3) downloaded as addressed in last section.
+cadd_feature.npz:  
+    (1) cadd features of DNA sequence for CTCF binding sites.  
+    (2) non-cell-type specific.  
+    (3) downloaded as addressed in last section.  
 
 To generate P/N dataset, you can simply run following command:
 ```properties
@@ -71,6 +71,7 @@ work_dir
 ```     
 
 
+
 ## 3. Run DeepAnchor
 DeepAnchor trains a classifier to distinguish insulator-related CBSs from others. After training, the model will be used to predict DeepAnchor score to show the possibility that each CBS belong to insulator-related CBSs. 
 
@@ -88,7 +89,7 @@ python DeepAnchor.py  work_dir predict
 
 This will generate a file *scored_motif.tsv* that contain all CBSs and their DeepAnchor score. We need to copy this file to ./data/ folder for downstream analyses.
 
-The data columns of *scored_motif.tsv* are shown below:
+The data columns of *scored_motif.tsv* are shown below:  
 |chrom|start|end|strand|score|anchor_score|
 |-----|-----|---|------|-----|------------|
 
@@ -116,8 +117,6 @@ In work_dir/LoopAnchor folder, you can find the result LoopAnchor_pred.bedpe whi
 
 
 
-
-
 Here is a complete example. The data can be found in ./data/ folder, but you still need to download some files as shown before.
 ```properties
 python DeepAnchor_input.py ./data/GM12878
@@ -129,3 +128,6 @@ python run_LoopAnchor_denovo.py ./data/K562
 
 ## Landscape availability
 We collected 764 available CTCF ChIP-seq data from ENCODE, CistromDB and ChIP-Atlas and use LoopAnchor to predict CTCF-anchored loops. The results are available at UCSC Track Data Hubs (https://genome.ucsc.edu/cgi-bin/hgHubConnect) by entering customized hub URLs https://raw.githubusercontent.com/mulinlab/LoopAnchor/master/hubs_landscape.txt or https://raw.githubusercontent.com/mulinlab/LoopAnchor/master/hubs_all.txt, respectively.
+
+
+You can also find this tutorial on https://loopanchor.readthedocs.io/en/latest/
