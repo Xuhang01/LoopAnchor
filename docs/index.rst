@@ -1,13 +1,17 @@
 Welcome to LoopAnchor's documentation!
 ===================================
 
-.. LoopAnchor documentation master file.
+.. LoopAnchor documentation master file, created by
+   sphinx-quickstart on Thu Sep 16 19:43:51 2021.
+   You can adapt this file completely to your liking, but it should at least
+   contain the root `toctree` directive.
 
 LoopAnchor – Inferring CTCF insulators and anchored loops across human tissues and cell types.
 ===============================================================================================
 
 .. toctree::
-   
+   :maxdepth: 1
+
    Pipeline
 
 
