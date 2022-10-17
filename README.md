@@ -35,16 +35,10 @@ work_dir
 ```
 Here are the detailed explainations of these files and the meanings of columns:
 
-* `CTCF_peak.bed.gz`: the ChIP-seq narrowPeak file for CTCF with 10 columns (chrom, chromStart, chromEnd, name, score, strand, signalValue, pValue, qValue, summit). The definition of narrowPeak can be referred from [`ENCODE narrowPeak: Narrow (or Point-Source) Peaks format`](https://genome.ucsc.edu/FAQ/FAQformat.html#format12). Here is a brief explaination:
-  * chrom, chromStart, chromEnd, strand:
-  * name, score, signalValue:
-  * pValue:
-  * qValue:
-  * summit:
-* `loop.bedpe`: the ChIA-PET loop file for Cohesin (RAD21) from the same cell type with 10 columns (chr1, start1, end1, chr2, start2, end2, name, score, strand1, strand2). The detailed explaination of bedpe format can be referred from [BEDPE format](https://bedtools.readthedocs.io/en/latest/content/general-usage.html). The meanings of these columns are:
-  * chr1, start1, end1, strand1:
-  * chr2, start2, end2, strand2: 
-  * name, score:
+* `CTCF_peak.bed.gz`: the ChIP-seq narrowPeak file for CTCF with 10 columns (chrom, chromStart, chromEnd, name, score, strand, signalValue, pValue, qValue, summit). The definition of narrowPeak can be referred from [`ENCODE narrowPeak: Narrow (or Point-Source) Peaks format`](https://genome.ucsc.edu/FAQ/FAQformat.html#format12)
+  
+* `loop.bedpe`: the ChIA-PET loop file for Cohesin (RAD21) from the same cell type with 10 columns (chr1, start1, end1, chr2, start2, end2, name, score, strand1, strand2). The detailed explaination of bedpe format can be referred from [BEDPE format](https://bedtools.readthedocs.io/en/latest/content/general-usage.html). The 
+
 * `CTCF_motif.tsv`: the position of all CTCF binding sites. This file is non-cell-type specific and can be found in the `data` folder ([data/CTCF_motif.tsv](data/CTCF_motif.tsv)).
 * `dna_feature.npz`: the one-hot representation of DNA sequence for CTCF binding sites. This file is non-cell-type specific. We have prepared this file which can be downloaded directly:  [`dna feature matrix`](http://www.mulinlab.org/LoopAnchor/dna_feature.npz).
 * `cadd_feature.npz`: the CADD features of DNA sequence for CTCF binding sites. This file is non-cell-type specific. We have prepared this file which can be downloaded directly: [`cadd feature matrix`](http://www.mulinlab.org/LoopAnchor/cadd_feature.npz). 
