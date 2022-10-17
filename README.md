@@ -3,9 +3,9 @@
 Variable interactions between enhancer and target gene have been used in explaining cell type-specific transcriptional regulation scheme, but the mechanisms underlying the precise wiring between genes and the enhancers from varied distances remain unclear. As the main insulator-related transcription factor (TF) discovered in vertebrates, CTCF assists cohesin to form chromatin loops, which is believed to be the fundamental biophysical basis for distal gene regulation.  
 
 
-Here we present LoopAnchor to provide a two-step in silico strategy to predict cohesin-meidated chromatin loops. In the first step, we developed a Deep Learning model `DeepAnchor` to predict the genomic/epigenomic partterns surrounding insulation related CTCF binding sites (CBSs). Generally, `DeepAnchor` uses cohesin ChIA-PET data, CTCF ChIP-seq data, and CBSs as inputs, to train a classifier to distinguish insulation-related CBSs from others. Then we use the model to calculate anchor score ranging from [0, 1] for all CBSs. CBSs with larger score is more likely to be positive CTCF insulator. In the second step, we introduced anchor score into an existing method, loop extrusion model, to make predictions for cohesin-meidated loops. Besides, we have collected CTCF ChIP-seq data from many cell types and use LoopAnchor to predict loops. All predicted loops for 168 selected biosamples and all 764 biosamples can be visualized and compared as separated tracks at UCSC Track Data Hubs (https://genome.ucsc.edu/cgi-bin/hgHubConnect) by entering customized hub URLs https://raw.githubusercontent.com/mulinlab/LoopAnchor/master/hubs_landscape.txt or https://raw.githubusercontent.com/mulinlab/LoopAnchor/master/hubs_all.txt, respectively.
+Here we present `LoopAnchor` to provide a two-step *in silico* strategy to predict cohesin-meidated chromatin loops. In the first step, we developed a Deep Learning model `DeepAnchor` to predict the genomic/epigenomic partterns surrounding insulation related CTCF binding sites (CBSs). Generally, `DeepAnchor` uses cohesin ChIA-PET data, CTCF ChIP-seq data, and CBSs as inputs, to train a classifier to distinguish insulation-related CBSs from others. Then we use the model to calculate anchor score ranging from [0, 1] for all CBSs. CBSs with larger score is more likely to be positive CTCF insulator. In the second step, we introduced anchor score into an existing method, loop extrusion model, to make predictions for cohesin-meidated loops. Besides, we have collected CTCF ChIP-seq data from many cell types and use `LoopAnchor` to predict loops. All predicted loops for 168 selected biosamples and all 764 biosamples can be visualized and compared as separated tracks at UCSC Track Data Hubs (https://genome.ucsc.edu/cgi-bin/hgHubConnect) by entering customized hub URLs https://raw.githubusercontent.com/mulinlab/LoopAnchor/master/hubs_landscape.txt or https://raw.githubusercontent.com/mulinlab/LoopAnchor/master/hubs_all.txt, respectively.
 
-Because LoopAnchor is a two-step strategy, it allows users to start from any steps they want. For example, if users want to test DeepAnchor model, they can download the feature data, which is pretty large, to train the model. If users only want to get the cohensin-meidated loops, they can either start from the second step, where they only need to prepare their own CTCF ChIP-seq data to make predictions, or download the loops from landscape if the cell type is already included in landscape. 
+Because `LoopAnchor` is a two-step strategy, it allows users to start from any steps they want. For example, if users want to test `DeepAnchor` model, they can download the feature data, which is pretty large, to train the model. If users only want to get the cohensin-meidated loops, they can either start from the second step, where they only need to prepare their own CTCF ChIP-seq data to make predictions, or download the loops from landscape if the cell type is already included in landscape. 
 
 
 
@@ -65,15 +65,15 @@ work_dir
 
 
 ### Run DeepAnchor
-`DeepAnchor` trains a classifier to distinguish insulator-related CBSs from others. After training, the model will be used to predict DeepAnchor score to show the possibility that each CBS belong to insulator-related CBSs. 
+`DeepAnchor` trains a classifier to distinguish insulator-related CBSs from others. After training, the model will be used to predict `DeepAnchor` score to show the possibility that each CBS belong to insulator-related CBSs. 
 
 To train the classifier model, run command:
 ```properties
 python DeepAnchor.py work_dir train
 ```
-This will generate a DeepAnchor model which will be saved as `DeepAnchor.model` in `work_dir` (`work_dir/DeepAnchor.model`).
+This will generate a `DeepAnchor` model which will be saved as `DeepAnchor.model` in `work_dir` (`work_dir/DeepAnchor.model`).
 
-To predict the DeepAnchor score for all CBSs, run command:
+To predict the `DeepAnchor` score for all CBSs, run command:
 
 ```properties
 python DeepAnchor.py work_dir predict
@@ -85,7 +85,7 @@ The file `scored_motif.tsv` contains 6 columns (chrom, start, end, strand, motif
 
 * chrom, start, end, strand: position information.
 * motif_score: the score from motif scanning.
-* anchor_score:  the score predicted by DeepAnchor model.
+* anchor_score:  the score predicted by `DeepAnchor` model.
 
 
 ## LoopAnchor
