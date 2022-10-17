@@ -83,9 +83,9 @@ This will generate a file `scored_motif.tsv` that contains all CBSs and their De
 
 The file `scored_motif.tsv` contains 6 columns (chrom, start, end, strand, motif_score, anchor_score):
 
-* chrom, start, end, strand:
-* motif_score: the score from motif scanning
-* anchor_score:  the score predicted by DeepAnchor model
+* chrom, start, end, strand: position information.
+* motif_score: the score from motif scanning.
+* anchor_score:  the score predicted by DeepAnchor model.
 
 
 ## LoopAnchor
