@@ -1,12 +1,17 @@
 #!/usr/bin/env python
-"""
-DeepAnchor was a CNN-based method to distinguish loop-associated CTCF binding sites from others.
-It has two different mode: train, predict
+r"""
+DeepAnchor was a Deep Learning method to identify CTCF binding sites located at specific targets.
 
-When mode is train, it train a classifier and save it to file_model, while if mode is predict,
-it uses the classifier to predict the score of all motifs.
+It has two different mode: training mode and prediction mode.
 
-usage: python DeepAnchor.py  work_dir mode
+When mode is train, it trains a classifier with Conv2D.
+
+When mode is predict, it uses the classifier to predict the score of all cbs.
+
+
+Usage
+-----
+python DeepAnchor.py  work_dir mode
 """
 
 import os
@@ -26,6 +31,17 @@ from tensorflow.keras import models, layers
 
 
 def ROC_AUC(y_raw, y_pred):
+    r"""
+    Plot ROC curve.
+
+    Parameters
+    ----------
+    y_raw
+        Ground truth of label.
+    y_pred
+        Prediction score of label.
+
+    """
     fig, (ax1, ax2) = plt.subplots(1,2,figsize=(9,4), sharex=True, sharey=True)
 
     FPR, TPR, _ = metrics.roc_curve(y_raw, y_pred)
@@ -47,6 +63,9 @@ def ROC_AUC(y_raw, y_pred):
     
 
 def plot_history(histories, key='binary_crossentropy'):
+    r"""
+    Plot the training history of DL model.
+    """
     plt.figure(figsize=(8,6))
   
     for name, history in histories:
@@ -64,6 +83,21 @@ def plot_history(histories, key='binary_crossentropy'):
 
 
 def DeepAnchor(file_model, data):
+    r"""
+    
+    Structure of DeepAnchor and training process.
+
+    Parameters
+    ----------
+    file_model
+        File to save the model.
+    data
+        Training data.
+
+    return
+        model
+    """
+
     ### construct model
     model = models.Sequential()
     model.add(layers.Conv1D(32, 10, activation='relu', input_shape=(1000, 48)))
@@ -116,8 +150,8 @@ def main(argv=sys.argv):
 
     # input and output
     os.chdir(os.path.expanduser(work_dir))
-    file_motif = './raw/CTCF_motif.tsv'
-    file_scored_motif = './scored_motif.tsv'
+    file_cbs = './raw/cbs.tsv'
+    file_scored_cbs = './scored_cbs.tsv'
     file_model = './DeepAnchor.model'
 
     # train
@@ -149,13 +183,13 @@ def main(argv=sys.argv):
 
 
     elif mode == 'predict':
-        df_motif = pd.read_csv(file_motif, sep='\t', names=['chrom','start','end','strand','score'])
+        df_cbs = pd.read_csv(file_cbs, sep='\t', names=['chrom','start','end','strand','score'])
         predict_X = np.load('./DeepAnchor/total.npz')['Features']
 
         model = keras.models.load_model(file_model)
         pred_y = model.predict(predict_X)[:,1]
-        df_motif['anchor_score'] = pred_y
-        df_motif.to_csv(file_scored_motif, sep='\t', index=False, header=False)
+        df_cbs['anchor_score'] = pred_y
+        df_cbs.to_csv(file_scored_cbs, sep='\t', index=False, header=False)
 
     else:
         print('{} mode is not currently supported'.format(mode))

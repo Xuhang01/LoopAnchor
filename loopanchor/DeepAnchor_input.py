@@ -1,20 +1,24 @@
 #!/usr/bin/env python
-'''
+r"""
 This script generates training dataset for DeepAnchor.
-Please include following data within a work_dir and arrange them like that:
+Please include following data within a working directory and arrange them with structure as shown below:
 work_dir
     ----raw
-        ----loop.bedpe           # ChIA-PET or other types of loop files in bedpe format
-        ----CTCF_peak.bed.gz     # The ChIP-seq peak files of CTCF
-        ----CTCF_motif.tsv       # position of all CTCF binding sites 
-        ----dna_feature.npz      # one-hot representation of DNA sequence for CTCF binding sites
-        ----cadd_feature.npz     # cadd features of DNA sequence for CTCF binding sites
+        ----target.bed           # Targeted chromosome intervals in bed format.
+        ----CTCF_peak.bed.gz     # The ChIP-seq peak files of CTCF.
+        ----cbs.tsv       # Position of all CTCF binding sites. 
+        ----dna_feature.npz      # One-hot representation of DNA sequence for CTCF binding sites.
+        ----cadd_feature.npz     # Cadd features of DNA sequence for CTCF binding sites.
 
-You should prepare loop.bedpe, CTCF-peak.bed.gz for specific sample, while CTCF_motif.tsv, 
-dna_feature.npz, cadd_feature.npz are non-cell-type-specific and can be downloaded from tutorial.
+You should prepare target.bed, CTCF-peak.bed.gz for specific sample.
 
-usage: python DeepAnchor_input.py work_dir
-'''
+cbs.tsv, dna_feature.npz, cadd_feature.npz are non-cell-type-specific and can be downloaded from tutorial.
+
+Usage
+-----
+python DeepAnchor_input.py work_dir
+
+"""
 
 import os
 import sys
@@ -25,46 +29,61 @@ import tensorflow as tf
 
 bedpe_columns = ['chrom1','start1','end1','chrom2','start2','end2','name','score','strand1','strand2']
 peak_columns = ['chrom', 'start', 'end', 'name', 'score', 'strand', 'signalValue', 'pValue', 'qValue', 'summit']
-motif_columns = ['chrom','start','end','strand','score']
+cbs_columns = ['chrom','start','end','strand','score']
 
 
-def generate_bed_mark_motif(file_motif, file_bed):
-    '''
-    1. file_bed should contain no overlaps
-    2. We mark file_motif with file_bed and generate three marks:
-                    in_bed: 1 if motif is contained in any intervals in file_bed else 0
-        exclusively_in_bed: 1 if motif is exclusively contained in any intervals in file_bed else 0
-            maximum_in_bed: 1 if motif is the one with highest score in any intervals in file_bed esle 0
-    '''
+def generate_marked_cbs(file_cbs, file_target):
+    r"""
+    Use chromosome intervals to mark CTCF binding sites.
+
+    1. file_target should not contain overlaped intervals.
+    2. We mark file_cbs with file_target and generate three new columns for file_cbs:
+                    in_bed: 1 if cbs is contained in any intervals in file_target else 0
+        exclusively_in_bed: 1 if cbs is exclusively contained in any intervals in file_target else 0
+            maximum_in_bed: 1 if cbs is the one with highest score in any intervals in file_target esle 0
+            
+    Parameters
+    ----------
+    file_cbs
+        File name of CTCF binding sites.
+    file_targed
+        File name of targeted chromosome intervals.
+
+
+    Return
+    ------
+    df_cbs
+        CBS data frame with 3 new columns.
+    """
     
-    df_motif = pd.read_csv(file_motif, sep='\t', names=motif_columns)
+    df_cbs = pd.read_csv(file_cbs, sep='\t', names=cbs_columns)
 
-    os.system('bedtools intersect -a {} -b {} -loj > temp.motif'.format(file_motif, file_bed))
+    os.system('bedtools intersect -a {} -b {} -loj > temp.intersect'.format(file_cbs, file_target))
     bed_columns = ['bed_chrom','bed_start','bed_end']
-    df_matrix = pd.read_csv('temp.motif', sep='\t', names=motif_columns + bed_columns)
+    df_matrix = pd.read_csv('temp.intersect', sep='\t', names=cbs_columns + bed_columns)
     
     df_matrix = df_matrix.sort_values(['score'], ascending=False)
     
     list1, list2, list3 = [], [], []
-    for bed, sub_motif in df_matrix.groupby(['bed_chrom','bed_start','bed_end']):
+    for bed, sub_cbs in df_matrix.groupby(['bed_chrom','bed_start','bed_end']):
         if bed[0] == '.':
             pass
-        elif sub_motif.shape[0] > 1:
-            list1 += sub_motif.index.tolist()
-            list3.append(sub_motif.index.tolist()[0])
+        elif sub_cbs.shape[0] > 1:
+            list1 += sub_cbs.index.tolist()
+            list3.append(sub_cbs.index.tolist()[0])
         else:
-            list1 += sub_motif.index.tolist()
-            list2 += sub_motif.index.tolist()
-            list3 += sub_motif.index.tolist()
+            list1 += sub_cbs.index.tolist()
+            list2 += sub_cbs.index.tolist()
+            list3 += sub_cbs.index.tolist()
 
-    df_motif['in_bed'] = 0
-    df_motif['exclusively_in_bed'] = 0
-    df_motif['maximum_in_bed'] = 0
-    df_motif.loc[list1, 'in_bed'] = 1
-    df_motif.loc[list2, 'exclusively_in_bed'] = 1
-    df_motif.loc[list3, 'maximum_in_bed'] = 1
+    df_cbs['in_bed'] = 0
+    df_cbs['exclusively_in_bed'] = 0
+    df_cbs['maximum_in_bed'] = 0
+    df_cbs.loc[list1, 'in_bed'] = 1
+    df_cbs.loc[list2, 'exclusively_in_bed'] = 1
+    df_cbs.loc[list3, 'maximum_in_bed'] = 1
 
-    return df_motif
+    return df_cbs
 
 
 def main(argv=sys.argv):
@@ -75,25 +94,13 @@ def main(argv=sys.argv):
     if not os.path.exists('DeepAnchor'):
         os.mkdir('DeepAnchor')
     
-    file_bedpe = './raw/loop.bedpe'
+    file_target = './raw/target.bed'
     file_peak = './raw/CTCF_peak.bed.gz'
-    file_motif = './raw/CTCF_motif.tsv'
-    file_dna_onehot = './raw/dna_feature.npz'
+    file_cbs = './raw/cbs.tsv'
+    file_dna_features = './raw/dna_feature.npz'
     file_cadd_features = './raw/cadd_feature.npz'
-
-
-    print('>>> generate total anchors')
-    if not os.path.exists('./DeepAnchor/total_anchors.bed'):
-        df_loop = pd.read_csv(file_bedpe, sep='\t', names=bedpe_columns)
-        anchor1=pd.DataFrame(df_loop[['chrom1','start1','end1']].values, columns=['chrom','start','end'])
-        anchor2=pd.DataFrame(df_loop[['chrom2','start2','end2']].values, columns=['chrom','start','end'])
-    
-        total=pd.concat([anchor1, anchor2]).sort_values(['chrom','start','end'])
-        total.to_csv('temp.total.anchor', sep='\t', index=False, header=False)
-        os.system('bedtools merge -i temp.total.anchor > ./DeepAnchor/total_anchors.bed')
-
         
-    print('>>> generate file peaks')
+    print('>>> Preprocess ChIP-seq peaks')
     if not os.path.exists('./DeepAnchor/CTCF_peaks.bed'):
         df_peak = pd.read_csv(file_peak, sep='\t', names=peak_columns)
         df_peak = df_peak.sort_values(['chrom','start'])
@@ -101,28 +108,28 @@ def main(argv=sys.argv):
         os.system('bedtools merge -i temp.peak.bed > ./DeepAnchor/CTCF_peaks.bed')
 
 
-    print('>>> mark motif with anchor and peak')
-    if not os.path.exists('./DeepAnchor/marked_motif.tsv'):
-        df_anchor_mark_motif = generate_bed_mark_motif(file_motif, './DeepAnchor/total_anchors.bed')
-        df_peak_mark_motif = generate_bed_mark_motif(file_motif, './DeepAnchor/CTCF_peaks.bed')
-        df_marked_motif = df_anchor_mark_motif.merge(df_peak_mark_motif, on=['chrom','start','end','strand','score'])
-        df_marked_motif.columns = ['chrom','start','end','strand','score','in_anchor','exclusively_in_anchor','maximum_in_anchor','in_peak','exclusively_in_peak','maximum_in_peak']
-        df_marked_motif.to_csv('./DeepAnchor/marked_motif.tsv', sep='\t', index=False)
+    print('>>> Mark cbs with targets and CTCF ChIP-seq peaks')
+    if not os.path.exists('./DeepAnchor/marked_cbs.tsv'):
+        df_anchor_mark_cbs = generate_marked_cbs(file_cbs, file_target)
+        df_peak_mark_cbs = generate_marked_cbs(file_cbs, './DeepAnchor/CTCF_peaks.bed')
+        df_marked_cbs = df_anchor_mark_cbs.merge(df_peak_mark_cbs, on=['chrom','start','end','strand','score'])
+        df_marked_cbs.columns = ['chrom','start','end','strand','score','in_anchor','exclusively_in_anchor','maximum_in_anchor','in_peak','exclusively_in_peak','maximum_in_peak']
+        df_marked_cbs.to_csv('./DeepAnchor/marked_cbs.tsv', sep='\t', index=False)
 
 
     print('>>> Select positive and negative data')
-    df_marked_motif = pd.read_csv('./DeepAnchor/marked_motif.tsv', sep='\t')
-    df_marked_motif['selected'] = 0
-    df_pos = df_marked_motif[(df_marked_motif['exclusively_in_anchor'] == 1) & 
-                             (df_marked_motif['in_peak'] == 1) ]
+    df_marked_cbs = pd.read_csv('./DeepAnchor/marked_cbs.tsv', sep='\t')
+    df_marked_cbs['selected'] = 0
+    df_pos = df_marked_cbs[(df_marked_cbs['exclusively_in_anchor'] == 1) & 
+                             (df_marked_cbs['in_peak'] == 1) ]
     pos_index = df_pos.index.tolist()
 
-    # df_neg = df_marked_motif[(df_marked_motif['in_anchor'] ==0) &
-    #                          (df_marked_motif['in_peak'] == 1)]
-    df_neg = df_marked_motif[df_marked_motif['in_anchor'] == 0]
+    # df_neg = df_marked_cbs[(df_marked_cbs['in_anchor'] ==0) &
+    #                          (df_marked_cbs['in_peak'] == 1)]
+    df_neg = df_marked_cbs[df_marked_cbs['in_anchor'] == 0]
 
     selected_neg_index = list(np.random.choice(df_neg.index.tolist(), len(pos_index)))
-    df_marked_motif.loc[pos_index+selected_neg_index, 'selected'] = 1
+    df_marked_cbs.loc[pos_index+selected_neg_index, 'selected'] = 1
 
 
     print('>>> Add features')
@@ -131,12 +138,12 @@ def main(argv=sys.argv):
        or not os.path.exists('./DeepAnchor/valid.npz') :
 
         print('> load dna and cadd features')
-        dna=np.load(file_dna_onehot)['dna'].astype(np.float32)
+        dna=np.load(file_dna_features)['dna'].astype(np.float32)
         cadd_features=np.load(file_cadd_features)['cadd_features'].astype(np.float32)
     
     
         print('> select training dataset')
-        df_total = df_marked_motif[df_marked_motif['selected'] == 1]
+        df_total = df_marked_cbs[df_marked_cbs['selected'] == 1]
         df_total['label'] = 0
         df_total.loc[pos_index, 'label'] = 1
         df_train = df_total[~df_total['chrom'].isin(['chr17','chr18','chr19','chr20','chr21','chr22','chrX'])]
@@ -173,7 +180,7 @@ def main(argv=sys.argv):
 
     print('>>> generate total npz')
     if not os.path.exists('./DeepAnchor/total.npz'):
-        dna=np.load(file_dna_onehot)['dna'].astype(np.float32)
+        dna=np.load(file_dna_features)['dna'].astype(np.float32)
         cadd_features=np.load(file_cadd_features)['cadd_features'].astype(np.float32)
 
         total_Features = np.concatenate([cadd_features, dna], axis=2)

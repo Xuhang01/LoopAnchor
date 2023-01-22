@@ -1,7 +1,19 @@
 import pandas as pd
 from math import exp
 
-def LoopAnchor(df_peak_motif, df_loop):
+def LoopAnchor(df_peak_cbs, df_loop):
+    r"""
+    Model to predict Cohesin-mediated loops.
+
+    Parameters
+    ----------
+
+    df_peak_cbs
+        CTCF ChIP-seq peaks (marked with cbs).
+    df_loop
+        All positive loops mediated by Cohesin/CTCF.
+    """
+
     # constants
     w_ori = 3
     w_ctcf = 8.5
@@ -9,14 +21,14 @@ def LoopAnchor(df_peak_motif, df_loop):
     
     
     #### load peak file
-    n = len(df_peak_motif)
-    ctcf = df_peak_motif[['h', 'anchor']].apply(lambda s: s[0] * s[1], axis=1).mean()
+    n = len(df_peak_cbs)
+    ctcf = df_peak_cbs[['h', 'anchor']].apply(lambda s: s[0] * s[1], axis=1).mean()
 
     
     peak_dict = {}
-    for index, row in df_peak_motif.iterrows():
-        chrom,start,end,h,strand,score,anchor,index = row
-        peak_dict[index] = [chrom, (start+end)/2, h, strand, score, anchor]
+    for index, row in df_peak_cbs.iterrows():
+        chrom,start,end,h,strand,cbs_score,score,index = row
+        peak_dict[index] = [chrom, (start+end)/2, h, strand, cbs_score, score]
     
     #### load training file
     y_true = []
@@ -29,12 +41,12 @@ def LoopAnchor(df_peak_motif, df_loop):
     list_ori = []
     
     for index, row in df_loop.iterrows():
-        index1, index2, h1, h2, dist, strand1, anchor1, strand2, anchor2 = row
+        index1, index2, h1, h2, dist, strand1, score1, strand2, score2 = row
         strand1 = -1 if strand1 == '-' else 1
         strand2 = -1 if strand2 == '-' else 1
         
-        h1 = h1 * anchor1
-        h2 = h2 * anchor2
+        h1 = h1 * score1
+        h2 = h2 * score2
 
         lc = 1
     
