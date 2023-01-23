@@ -1,7 +1,8 @@
 # LoopAnchor
 
-CTCF is the most important Transcription Factor (TF) for genomic insulation in vertebrate. But it is also a versatile TF that plays several other roles in transcriptional regulation. Here we present DeepAnchor to provide precise description of the genomic/epigenomic patterns surrounding insulation-related CTCF binding sites (CBSs). Generally, DeepAnchor usees cohesin ChIA-PET data, CTCF ChIP-seq data and CBSs predicted by motif scan as input, to train a classifier to distinguish insulation-related CBSs from others. DeepAnchor then calculates a score ranged from [0, 1] for all CBSs, with a larger value meaning more likely to be a positive CTCF insulator.
+How CTCF recognizes insulators DNA sequence to exert chromosome barrier or enhancer blocking effects remains to be fully interrogated. Despite many computational tools were developed to predict CTCF-mediated loops qualitatively or quantitatively, few could specially evaluate the insulative regulatory potential of DNA sequence at CTCF binding sites (CBSs) and how it affects chromatin loop formation. Here, we developed a deep learning model, DeepAnchor, to precisely characterize predict the binding patterns insulative potentialfor different types of  of CBSs. By incorporating base-wise genomic/epigenomic features, we revealed distinct chromatin and sequence features for CTCF-mediated insulation and looping at a high resolution, such as two sequence motifs flanking the core CTCF motif only at positive loop-associated CBSsCTCF insulators. Besides, we leveraged the predicted insulator anchor score to optimize the loop extrusion model and achieved the best performance in predicting CTCF-anchored loops. We established a compendium of context-specific CTCF-anchored loops across 52 human tissue/cell types and found that genomic disruption of CTCF-anchored loops may represent a general causal mechanism of disease pathogenesis. These computational models, together with the established resource, could facilitate the mechanistic research on how the CTCF-mediated cis-regulatory elements (CREs) insulation shapes context-specific gene regulation in cell development and disease progression.
 
+![flowchart]('./docs/source/flowchart.PNG')
 
 ## Prepare data
 To implement DeepAnchor, one should prepare four types of data:
@@ -54,6 +55,15 @@ cadd_feature.npz:
 To generate P/N dataset, you can simply run following command:
 ```properties
 python DeepAnchor_input.py work_dir
+```
+
+
+Tips:
+
+If you have loop bedpe file, you can use ./pp/loop_to_bed.py to convert the loops to target.bed file.
+
+```
+python ./pp/loop_to_bed.py file_loop target_bed
 ```
 
 
