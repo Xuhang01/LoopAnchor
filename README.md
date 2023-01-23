@@ -5,7 +5,7 @@ How CTCF recognizes insulators DNA sequence to exert chromosome barrier or enhan
 
 
 <p align="center">
-   <img src="https://github.com/Xuhang01/LoopAnchor/docs/source/flowchart.PNG?raw=True">
+   <img src="https://github.com/Xuhang01/LoopAnchor/blob/master/docs/source/flowchart.PNG?raw=True">
 </p>
 
 ## Prepare data
