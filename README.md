@@ -1,11 +1,11 @@
 # LoopAnchor
 
-How CTCF recognizes insulators DNA sequence to exert chromosome barrier or enhancer blocking effects remains to be fully interrogated. Despite many computational tools were developed to predict CTCF-mediated loops qualitatively or quantitatively, few could specially evaluate the insulative regulatory potential of DNA sequence at CTCF binding sites (CBSs) and how it affects chromatin loop formation. Here, we developed a deep learning model, DeepAnchor, to precisely characterize predict the binding patterns insulative potentialfor different types of  of CBSs. By incorporating base-wise genomic/epigenomic features, we revealed distinct chromatin and sequence features for CTCF-mediated insulation and looping at a high resolution, such as two sequence motifs flanking the core CTCF motif only at positive loop-associated CBSsCTCF insulators. Besides, we leveraged the predicted insulator anchor score to optimize the loop extrusion model and achieved the best performance in predicting CTCF-anchored loops. We established a compendium of context-specific CTCF-anchored loops across 52 human tissue/cell types and found that genomic disruption of CTCF-anchored loops may represent a general causal mechanism of disease pathogenesis. These computational models, together with the established resource, could facilitate the mechanistic research on how the CTCF-mediated cis-regulatory elements (CREs) insulation shapes context-specific gene regulation in cell development and disease progression.
+CCCTC-binding factor (CTCF) is a transcription regulator which is involved in many cellular processes. How CTCF recognizes DNA sequence to exert chromosome barrier or enhancer blocking effects remains to be fully interrogated. Despite many computational tools were developed to predict CTCF-mediated loops qualitatively or quantitatively, few could specially evaluate the regulatory potential of DNA sequence at CTCF binding sites (CBSs) and how it affects chromatin loop formation. Here, we developed a deep learning model, DeepAnchor, to precisely characterize the binding patterns for different types of CBSs. By incorporating base-wise genomic/epigenomic features, we revealed distinct chromatin and sequence features for CTCF-mediated insulation and looping at a high resolution, such as two sequence motifs flanking the core CTCF motif at loop-associated CBSs. Besides, we leveraged the predicted anchor score to optimize the loop extrusion model and achieved the best performance in predicting CTCF-anchored loops. We established a compendium of context-specific CTCF-anchored loops across 52 human tissue/cell types and found that genomic disruption of CTCF-anchored loops may represent a general causal mechanism of disease pathogenesis. These computational models, together with the established resource, could facilitate the mechanistic research on how the CTCF-mediated cis-regulatory elements (CREs) shapes context-specific gene regulation in cell development and disease progression.
 
 
 
 <p align="center">
-   <img src="https://github.com/Xuhang01/LoopAnchor/blob/main/docs/source/flowchart.PNG?raw=True">
+   <img src="https://github.com/mulinlab/LoopAnchor/blob/master/docs/source/flowchart.PNG?raw=True">
 </p>
 
 ## Prepare data
@@ -71,7 +71,7 @@ python ./pp/loop_to_bed.py file_loop target_bed
 ```
 
 
-It will generate an output folder named DeepAnchor in work_dir:
+DeepAnchr_input.py will generate an output folder named DeepAnchor in work_dir:
 ```
 work_dir
     └── DeepAnchor  
@@ -141,6 +141,14 @@ cp ./data/GM12878/scored_cbs.tsv ./data/K562/raw
 python run_LoopAnchor_denovo.py ./data/K562
 ```
 
+## Other code resources
+
+Considering that github may be not available in some regions, we also provide [ReadTheDocs](https://loopanchor.readthedocs.io/en/latest/index.html) and [Bitbuket](https://bitbucket.org/xuhang01/loopanchor/src/main/) resource for LoopAnchor method.
+
 
 ## Landscape availability
-We collected 764 available CTCF ChIP-seq data from ENCODE, CistromDB and ChIP-Atlas and use LoopAnchor to predict CTCF-anchored loops. The results are available at UCSC Track Data Hubs (https://genome.ucsc.edu/cgi-bin/hgHubConnect) by entering customized hub URLs https://raw.githubusercontent.com/mulinlab/LoopAnchor/master/hubs_landscape.txt or https://raw.githubusercontent.com/mulinlab/LoopAnchor/master/hubs_all.txt, respectively.
+We collected 764 available CTCF ChIP-seq data from ENCODE, CistromDB and ChIP-Atlas and use LoopAnchor to predict CTCF-anchored loops. The results are available at UCSC Track Data Hubs (https://genome.ucsc.edu/cgi-bin/hgHubConnect) by entering customized hub URLs https://raw.githubusercontent.com/mulinlab/LoopAnchor/master/loopanchor/data/hubs/hubs_landscape.txt or https://raw.githubusercontent.com/mulinlab/LoopAnchor/master/loopanchor/data/hubs/hubs_all.txt, respectively.
+
+
+## Citation
+Xu, Hang, et al. "Inferring CTCF insulators and anchored loops across human tissues and cell types." bioRxiv (2022).
